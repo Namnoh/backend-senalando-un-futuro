@@ -88,4 +88,4 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 ## Integrantes
 
 - Alfredo Galdames 👻
-- Jean Venegas
+- Jean Venegas 🤖
