@@ -14,9 +14,9 @@ datasource db {
 }
 
 model Palabra {
-  id      Int     @id @default(autoincrement())
-  palabra String
-  nivel   Int
-  icon    String?
-  video   String
+  id_palabra      Int     @id @default(autoincrement())
+  nombre_palabra String
+  nivel_palabra   Int
+  icon_palabra   String?
+  video_palabra   String
 }
