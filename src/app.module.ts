@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { PalabrasModule } from './palabras/palabras.module';
 
 @Module({
-  imports: [],
+  imports: [PalabrasModule],
   controllers: [],
   providers: [],
 })
