@@ -22,3 +22,29 @@ model Palabra {
   icon_palabra        String?
   video_palabra       String
 }
+model Usuario {
+  idUsuario     Int     @id @default(autoincrement()) @unique
+  nombreUsuario String
+  apellidoUsuario String
+  correoUsuario String     @unique
+  contrasenaUsuario String
+  idRol         Int
+  rol           Rol      @relation(fields: [idRol], references: [idRol])
+  createAt      DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  progresos     Progreso[]
+}
+
+model Rol {
+  idRol    Int   @id @default(autoincrement()) @unique
+  nombre   String
+  usuarios Usuario[]
+}
+
+model Progreso {
+  idProgreso  Int    @id @default(autoincrement()) @unique
+  descripcion String
+  idUsuario   Int
+  usuario     Usuario   @relation(fields: [idUsuario], references: [idUsuario])
+}
