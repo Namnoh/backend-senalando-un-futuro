@@ -17,7 +17,11 @@ export class UsuariosService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} usuario`;
+    return this.prismaService.usuario.findUnique({
+      where:{
+        idUsuario: id
+      }
+    })
   }
 
   update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
