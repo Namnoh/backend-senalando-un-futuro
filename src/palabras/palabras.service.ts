@@ -21,7 +21,7 @@ export class PalabrasService {
   async findOne(id: number) {
     const palabraFound = await this.prismaService.palabra.findUnique({
       where: {
-        id_palabra: id
+        idPalabra: id
       }
     })
 
@@ -38,7 +38,7 @@ export class PalabrasService {
   async update(id: number, updatePalabraDto: UpdatePalabraDto) {
     const palabraFound = await this.prismaService.palabra.update({
       where: {
-        id_palabra : id
+        idPalabra : id
       },
       data: updatePalabraDto
     })
@@ -54,7 +54,7 @@ export class PalabrasService {
   async remove(id: number) {
     const deletedPalabra = await this.prismaService.palabra.delete({
       where: {
-        id_palabra: id
+        idPalabra: id
       }
     })
 

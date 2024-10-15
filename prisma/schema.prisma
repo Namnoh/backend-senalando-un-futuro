@@ -15,36 +15,59 @@ datasource db {
 }
 
 model Palabra {
-  id_palabra          Int     @id @default(autoincrement())
-  nombre_palabra      String
-  nivel_palabra       Int
-  categoria_palabra   String
-  icon_palabra        String?
-  video_palabra       String
+  idPalabra          Int               @id @default(autoincrement())
+  nombrePalabra      String
+  iconPalabra        String
+  videoPalabra       String
+  idNivel            Int
+  idCategoria        Int
+  categoria          Categoria         @relation(fields: [idCategoria], references: [idCategoria])
 }
-model Usuario {
-  idUsuario     Int     @id @default(autoincrement()) @unique
-  nombreUsuario String
-  apellidoUsuario String
-  correoUsuario String     @unique
-  contrasenaUsuario String
-  idRol         Int
-  rol           Rol      @relation(fields: [idRol], references: [idRol])
-  createAt      DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 
-  progresos     Progreso[]
+model Categoria {
+  idCategoria             Int           @id @default(autoincrement())
+  nombreCategoria         String
+  descripcionCategoria    String
+  iconoCategoria          String
+  bgCategoria             String
+  idNivel                 Int
+  nivel                   Nivel         @relation(fields: [idNivel], references: [idNivel])
+  palabras                Palabra[]
+}
+
+model Nivel {
+  idNivel           Int             @id @default(autoincrement())
+  nombreNivel       String
+  descripcionNivel  String
+  iconoNivel        String
+  categorias        Categoria[]
+  Progreso          Progreso[]
+}
+
+model Usuario {
+  idUsuario          Int            @id @default(autoincrement()) @unique
+  nombreUsuario      String
+  apellidoUsuario    String
+  correoUsuario      String         @unique
+  contrasenaUsuario  String
+  idRol              Int
+  rol                Rol            @relation(fields: [idRol], references: [idRol])
+  progreso           Progreso?      @relation // Se define como opcional sin 'fields' ni 'references'
 }
 
 model Rol {
-  idRol    Int   @id @default(autoincrement()) @unique
-  nombre   String
-  usuarios Usuario[]
+  idRol              Int            @id @default(autoincrement()) @unique
+  nombre             String
+  usuarios           Usuario[]
 }
 
 model Progreso {
-  idProgreso  Int    @id @default(autoincrement()) @unique
-  descripcion String
-  idUsuario   Int
-  usuario     Usuario   @relation(fields: [idUsuario], references: [idUsuario])
+  idProgreso            Int         @id @default(autoincrement()) @unique
+  categoriasProgreso    Json         
+  palabrasProgreso      Json
+  porcentajeNivel       Float
+  idNivel               Int
+  nivel                 Nivel       @relation(fields: [idNivel], references: [idNivel])
+  idUsuario             Int         @unique // Este campo es único para garantizar la relación 1:1
+  usuario               Usuario     @relation(fields: [idUsuario], references: [idUsuario]) // Definido como requerido
 }
