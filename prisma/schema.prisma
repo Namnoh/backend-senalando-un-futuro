@@ -20,6 +20,7 @@ model Palabra {
   iconPalabra        String
   videoPalabra       String
   idNivel            Int
+  nivel              Nivel             @relation(fields: [idNivel], references: [idNivel])
   idCategoria        Int
   categoria          Categoria         @relation(fields: [idCategoria], references: [idCategoria])
 }
@@ -40,6 +41,7 @@ model Nivel {
   nombreNivel       String
   descripcionNivel  String
   iconoNivel        String
+  palabras          Palabra[]
   categorias        Categoria[]
   Progreso          Progreso[]
 }
@@ -58,6 +60,7 @@ model Usuario {
 model Rol {
   idRol              Int            @id @default(autoincrement()) @unique
   nombre             String
+  descripcion        String?
   usuarios           Usuario[]
 }
 

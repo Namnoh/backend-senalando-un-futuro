@@ -3,7 +3,7 @@ import { PalabrasService } from './palabras.service';
 import { CreatePalabraDto } from './dto/create-palabra.dto';
 import { UpdatePalabraDto } from './dto/update-palabra.dto';
 
-@Controller('palabras')
+@Controller('words')
 export class PalabrasController {
   constructor(private readonly palabrasService: PalabrasService) {}
 
