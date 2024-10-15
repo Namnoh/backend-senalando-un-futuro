@@ -7,6 +7,7 @@ import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 export class CategoriasController {
   constructor(private readonly categoriasService: CategoriasService) {}
 
+  // INICIO DE CRUD BÁSICO
   @Post()
   create(@Body() createCategoriaDto: CreateCategoriaDto) {
     return this.categoriasService.create(createCategoriaDto);
@@ -30,5 +31,11 @@ export class CategoriasController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.categoriasService.remove(+id);
+  }
+  // FIN DE CRUD BÁSICO
+
+  @Get('getAllByLevel/:idNivel')
+  findAllByLevel(@Param('idNivel') idNivel: number) {
+    return this.categoriasService.findAllByLevel(+idNivel)
   }
 }

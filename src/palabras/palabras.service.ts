@@ -64,4 +64,20 @@ export class PalabrasService {
 
     return deletedPalabra;
   }
+
+  async findAllByCategory(idCategoria: number) {
+    const wordFound = await this.prismaService.palabra.findMany({
+      where: {
+        idCategoria: idCategoria,  // Aquí se filtra por la FK que hace referencia al nivel
+      },
+    });
+
+    if (!wordFound) {
+      throw new NotFoundException(
+        `No se encontraron categorías correspondientes al nivel ${idCategoria}.`,
+      );
+    }
+
+    return wordFound;
+  }
 }

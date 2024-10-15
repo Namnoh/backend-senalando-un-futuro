@@ -31,4 +31,9 @@ export class PalabrasController {
   remove(@Param('id') id: string) {
     return this.palabrasService.remove(+id);
   }
+
+  @Get('getAllByCategory/:idCategoria')
+  findAllByLevel(@Param('idCategoria') idCategoria: number) {
+    return this.palabrasService.findAllByCategory(+idCategoria)
+  }
 }

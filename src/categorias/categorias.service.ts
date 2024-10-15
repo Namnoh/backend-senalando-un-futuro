@@ -58,4 +58,20 @@ export class CategoriasService {
     
     return deletedCategoria;
   }
+
+  async findAllByLevel(idNivel: number) {
+    const categoriaFound = await this.prismaService.categoria.findMany({
+      where: {
+        idNivel: idNivel,  // Aquí se filtra por la FK que hace referencia al nivel
+      },
+    });
+
+    if (!categoriaFound) {
+      throw new NotFoundException(
+        `No se encontraron categorías correspondientes al nivel ${idNivel}.`,
+      );
+    }
+
+    return categoriaFound;
+  }
 }
