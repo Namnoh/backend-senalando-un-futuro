@@ -50,4 +50,8 @@ export class UsuariosController {
   findByEmail(@Param('email') email: string) {
     return this.usuariosService.findByEmail(email);
   }
+  @Get('/authorize/:email')
+  authorize(@Param('email') email: string) {
+    return this.usuariosService.authorize(email);
+  }
 }

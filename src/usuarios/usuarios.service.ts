@@ -16,6 +16,19 @@ export class UsuariosService {
     return this.prismaService.usuario.findMany();
   }
 
+  async authorize(email: string) {
+    const usuarioFound = await this.prismaService.usuario.findUnique({
+      where: {
+        correoUsuario: email
+      },
+    });
+    if (!usuarioFound) {
+      throw new NotFoundException(`El usuario con ${email} no fue encontrado`);
+    }
+    return usuarioFound;
+  }
+
+
   async findOne(id: number) {
     const usuarioFound = await this.prismaService.usuario.findUnique({
       where: {
