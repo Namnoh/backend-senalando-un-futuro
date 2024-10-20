@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { updateUsuarioDto } from './dto/update-usuario.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -8,7 +8,23 @@ import { Usuario } from './entities/usuario.entity';
 export class UsuariosService {
   constructor(private prismaService: PrismaService) {}
 
-  create(createUsuarioDto: CreateUsuarioDto) {
+  async create(createUsuarioDto: CreateUsuarioDto) {
+    const userFound = await this.prismaService.usuario.findFirst({
+      where: {
+        correoUsuario: {
+          equals: createUsuarioDto.correoUsuario,
+          mode: 'insensitive',
+        },
+      }
+    })
+
+    if (userFound) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Un usuario con ese nombre ya existe.',
+      }, HttpStatus.BAD_REQUEST);
+    }
+
     return this.prismaService.usuario.create({ data: createUsuarioDto });
   }
 
@@ -17,38 +33,54 @@ export class UsuariosService {
   }
 
   async authorize(email: string) {
-    const usuarioFound = await this.prismaService.usuario.findUnique({
+    const userFound = await this.prismaService.usuario.findUnique({
       where: {
         correoUsuario: email
       },
     });
-    if (!usuarioFound) {
+    if (!userFound) {
       throw new NotFoundException(`El usuario con ${email} no fue encontrado`);
     }
-    return usuarioFound;
+    return userFound;
   }
 
 
   async findOne(id: number) {
-    const usuarioFound = await this.prismaService.usuario.findUnique({
+    const userFound = await this.prismaService.usuario.findUnique({
       where: {
         idUsuario: id,
       },
     });
-    if (!usuarioFound) {
+    if (!userFound) {
       throw new NotFoundException(`El usuario con ${id} no fue encontrado`);
     }
-    return usuarioFound;
+    return userFound;
   }
 
   async update(id: number, updateUsuarioDto: updateUsuarioDto) {
-    const usuarioFound = await this.prismaService.usuario.update({
+    const userFoundDuplicated = await this.prismaService.usuario.findFirst({
+      where: {
+        correoUsuario: {
+          equals: updateUsuarioDto.correoUsuario,
+          mode: 'insensitive',
+        },
+      }
+    })
+
+    if (userFoundDuplicated) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Un usuario con ese correo ya existe.',
+      }, HttpStatus.BAD_REQUEST);
+    }
+
+    const userFound = await this.prismaService.usuario.update({
       where: {
         idUsuario: id,
       },
       data: updateUsuarioDto,
     });
-    if (!usuarioFound) {
+    if (!userFound) {
       throw new NotFoundException(`El usuario con ${id} no fue encontrado`);
     }
   }
