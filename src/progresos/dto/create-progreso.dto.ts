@@ -5,7 +5,7 @@ import { Palabra } from 'src/palabras/entities/palabra.entity';
 
 class CategoriaProgreso {
     @IsNumber()
-    idProgreso: number;
+    idCategoria: number;
 
     @IsString()
     nombreCategoria: string;
