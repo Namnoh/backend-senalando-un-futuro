@@ -51,10 +51,19 @@ export class CategoriasService {
   async update(id: number, updateCategoriaDto: UpdateCategoriaDto) {
     const categoryFoundDuplicated = await this.prismaService.categoria.findFirst({
       where: {
-        nombreCategoria: {
-          equals: updateCategoriaDto.nombreCategoria,
-          mode: 'insensitive',
-        },
+        AND: [
+          {
+            nombreCategoria: {
+              equals: updateCategoriaDto.nombreCategoria,
+              mode: 'insensitive',
+            },
+          },
+          {
+            idCategoria: {
+              not: id,
+            },
+          },
+        ],
       }
     })
 

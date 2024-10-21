@@ -1,14 +1,35 @@
 
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsNumber, IsObject, IsString, ValidateNested } from 'class-validator';
+import { Palabra } from 'src/palabras/entities/palabra.entity';
+
+class CategoriaProgreso {
+    @IsNumber()
+    idProgreso: number;
+
+    @IsString()
+    nombreCategoria: string;
+
+    @IsNumber()
+    progresoCategoria: number;
+}
+
+class PalabraProgreso {
+    @IsNumber()
+    idPalabra: number;
+    
+    @IsString()
+    nombrePalabra: string;
+}
 
 export class CrearProgresoDto {
     @IsNotEmpty()
-    @IsString()
-    categoriasProgreso: string; // JSON string
+    @IsObject()
+    categoriasProgreso: {[key:string]:CategoriaProgreso}; // JSON string
 
     @IsNotEmpty()
-    @IsString()
-    palabrasProgreso: string; // JSON string
+    @IsObject()
+    palabrasProgreso: {[key:string]:PalabraProgreso}; // JSON string
 
     @IsNotEmpty()
     @IsNumber()

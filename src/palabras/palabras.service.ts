@@ -54,10 +54,19 @@ export class PalabrasService {
   async update(id: number, updatePalabraDto: UpdatePalabraDto) {
     const wordFoundDuplicated = await this.prismaService.palabra.findFirst({
       where: {
-        nombrePalabra: {
-          equals: updatePalabraDto.nombrePalabra,
-          mode: 'insensitive',
-        },
+        AND: [
+          {
+            nombrePalabra: {
+              equals: updatePalabraDto.nombrePalabra,
+              mode: 'insensitive',
+            },
+          },
+          {
+            idPalabra: {
+              not: id,
+            },
+          },
+        ], 
       }
     })
 

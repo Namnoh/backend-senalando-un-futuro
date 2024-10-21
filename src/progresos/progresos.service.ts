@@ -20,8 +20,8 @@ export class ProgresoService {
 
             return await this.prisma.progreso.create({
                 data: {
-                    categoriasProgreso: crearProgresoDto.categoriasProgreso,
-                    palabrasProgreso: crearProgresoDto.palabrasProgreso,
+                    categoriasProgreso: crearProgresoDto.categoriasProgreso as any,
+                    palabrasProgreso: crearProgresoDto.palabrasProgreso as any,
                     porcentajeNivel: crearProgresoDto.porcentajeNivel,
                     idNivel: crearProgresoDto.idNivel,
                     idUsuario: crearProgresoDto.idUsuario,
