@@ -107,11 +107,11 @@ export class UsuariosService {
       }, HttpStatus.BAD_REQUEST);
     }
 
-    const updatedUser = await this.prismaService.usuario.update({
+    return await this.prismaService.usuario.update({
       where: { idUsuario: id },
       data: updateUsuarioDto,
     });
-  }
+  };
 
   async remove(id: number) {
     const deleteUsuario = await this.prismaService.usuario.delete({

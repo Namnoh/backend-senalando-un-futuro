@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, UseGuards, ParseIntPipe, Patch } from '@nestjs/common';
 //import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs';
 import { ProgresoService } from './progresos.service';
 import { CrearProgresoDto } from './dto/create-progreso.dto';
@@ -43,5 +43,10 @@ export class ProgresoController {
         @Body() datosActualizacion: ActualizarProgresoDto
     ): Promise<Progreso> {
         return this.progresoService.actualizarProgreso(idUsuario, datosActualizacion);
+    }
+
+    @Patch(':id')
+    update(@Param('id') id: number, @Body() updatedProgress: ActualizarProgresoDto) {
+        return this.progresoService.update(+id, updatedProgress);
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CrearProgresoDto } from './dto/create-progreso.dto';
 import { ActualizarProgresoDto } from './dto/update-progreso.dto';
@@ -82,4 +82,21 @@ export class ProgresoService {
             throw new InternalServerErrorException(`Error al actualizar el progreso: ${error.message}`);
         }
     }
+
+    async update(idProgreso: number, updatedProgress: ActualizarProgresoDto) {
+        const progressFound = await this.prisma.progreso.findUnique({
+            where: {
+                idProgreso: idProgreso,
+            },
+        });
+            
+        if (!progressFound) {
+            throw new NotFoundException(`El usuario con ${idProgreso} no fue encontrado`);
+        }
+
+        return await this.prisma.progreso.update({
+        where: { idProgreso: idProgreso },
+        data: updatedProgress,
+        });
+    };
 }
