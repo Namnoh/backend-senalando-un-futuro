@@ -94,3 +94,4 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 ## Proyecto
 
 - SEÑALANDO UN FUTURO - SUF
+- Señalando el Futuro una Seña a la Vez

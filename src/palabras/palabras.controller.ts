@@ -3,7 +3,7 @@ import { PalabrasService } from './palabras.service';
 import { CreatePalabraDto } from './dto/create-palabra.dto';
 import { UpdatePalabraDto } from './dto/update-palabra.dto';
 
-@Controller('palabras')
+@Controller('words')
 export class PalabrasController {
   constructor(private readonly palabrasService: PalabrasService) {}
 
@@ -30,5 +30,10 @@ export class PalabrasController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.palabrasService.remove(+id);
+  }
+
+  @Get('getAllByCategory/:idCategoria')
+  findAllByLevel(@Param('idCategoria') idCategoria: number) {
+    return this.palabrasService.findAllByCategory(+idCategoria)
   }
 }
