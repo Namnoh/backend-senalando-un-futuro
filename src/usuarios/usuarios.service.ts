@@ -1,8 +1,9 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { updateUsuarioDto } from './dto/update-usuario.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-
+import * as bcrypt from 'bcrypt';
+import { ChangePasswordDto } from './dto/changePass.dto';
 @Injectable()
 export class UsuariosService {
   constructor(private prismaService: PrismaService) {}
@@ -137,5 +138,25 @@ export class UsuariosService {
       },
     });
   }
-  
+  async changePassword(id: number, nuevaContrasena: string): Promise<{ message: string }> {
+    try {
+      const user = await this.prismaService.usuario.findUnique({
+        where: { idUsuario: id },
+      });
+
+      if (!user) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+
+      await this.prismaService.usuario.update({
+        where: { idUsuario: id },
+        data: { contrasenaUsuario: nuevaContrasena },
+      });
+
+      return { message: 'Contraseña actualizada exitosamente' };
+    } catch (error) {
+      console.error('Error al cambiar la contraseña:', error);
+      throw new InternalServerErrorException('Error al cambiar la contraseña');
+    }
+  }
 }
