@@ -1,25 +1,14 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  HttpException,
-  HttpStatus
-} from '@nestjs/common';
+import {Controller,Get,Post,Body,Patch,Param,Delete,HttpException,HttpStatus,UseGuards,HttpCode,UnauthorizedException,ForbiddenException, ParseIntPipe} from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { updateUsuarioDto } from './dto/update-usuario.dto';
-import { JwtService } from '@nestjs/jwt';
+import { ChangePasswordDto } from './dto/changePass.dto';
 
 
 @Controller('users')
 export class UsuariosController {
   constructor(
     private readonly usuariosService: UsuariosService,
-    private readonly jwtService: JwtService, // Inyecta el servicio JWT
   ) {}
 
   @Post()
@@ -53,5 +42,12 @@ export class UsuariosController {
   @Get('/authorize/:email')
   authorize(@Param('email') email: string) {
     return this.usuariosService.authorize(email);
+  }
+  @Patch('change-password/:id')
+  async changePassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('nuevaContrasena') nuevaContrasena: string,
+  ) {
+    return this.usuariosService.changePassword(id, nuevaContrasena);
   }
 }
