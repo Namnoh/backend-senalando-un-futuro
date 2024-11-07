@@ -159,4 +159,10 @@ export class UsuariosService {
       throw new InternalServerErrorException('Error al cambiar la contraseña');
     }
   }
+  async updatePassword(email: string, hashedPassword: string) {
+    return this.prismaService.usuario.update({
+      where: { correoUsuario: email },
+      data: { contrasenaUsuario: hashedPassword },
+    });
+  }
 }
