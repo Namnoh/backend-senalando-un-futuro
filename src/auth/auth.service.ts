@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
@@ -23,13 +23,14 @@ export class AuthService {
   async resetPassword(email: string) {
     const user = await this.usuariosService.findByEmail(email);
     if (!user) {
-      throw new UnauthorizedException('Usuario no encontrado');
+      // No revelamos si el usuario existe o no por razones de seguridad
+      return;
     }
 
     const token = jwt.sign(
       { email: user.correoUsuario },
       process.env.SECRETO_SUPER_SEGURO,
-      { expiresIn: '900' }
+      { expiresIn: '15m' } // 15 minutos
     );
     const resetLink = `http://localhost:3000/updatePassword?token=${token}`;
 
@@ -62,7 +63,7 @@ export class AuthService {
               <a href="${resetLink}" style="color: #FF9F1C; word-break: break-all;">${resetLink}</a>
             </p>
             <p style="color: #666666; font-size: 14px; line-height: 1.5; margin-top: 30px;">
-              Por razones de seguridad, este enlace expirará en 24 horas.
+              Por razones de seguridad, este enlace expirará en 15 minutos.
             </p>
             <hr style="border: none; border-top: 1px solid #eeeeee; margin: 30px 0;">
             <p style="color: #999999; font-size: 12px; text-align: center;">
@@ -77,13 +78,24 @@ export class AuthService {
   async verifyResetToken(token: string): Promise<string> {
     try {
       const decoded = jwt.verify(token, process.env.SECRETO_SUPER_SEGURO) as { email: string };
+      const user = await this.usuariosService.findByEmail(decoded.email);
+      if (!user) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
       return decoded.email;
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new UnauthorizedException('Token inválido o expirado');
     }
   }
 
   async updatePassword(email: string, newPassword: string): Promise<void> {
+    const user = await this.usuariosService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await this.usuariosService.updatePassword(email, hashedPassword);
   }
