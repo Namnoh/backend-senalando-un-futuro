@@ -46,7 +46,7 @@ export class AuthService {
       { expiresIn: '1h' } // 1 hora de expiración
     );
     console.log('Token generado:', token);
-    const resetLink = `http://localhost:3000/updatePassword?token=${token}`;
+    const resetLink = `${process.env.FRONT_URL}/updatePassword?token=${token}`;
 
     // Enviar correo con el enlace de restablecimiento
     await this.transporter.sendMail({
