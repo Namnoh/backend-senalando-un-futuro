@@ -1,4 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'; import { NivelService } from './niveles.service'; import { CrearNivelDto } from './dto/create-nivel.dto'; import { ActualizarNivelDto } from './dto/update-nivel.dto';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'; 
+import { NivelService } from './niveles.service'; import { CrearNivelDto } from './dto/create-nivel.dto'; 
+import { ActualizarNivelDto } from './dto/update-nivel.dto';
 
 @Controller('nivel') export class NivelController { constructor(private readonly nivelService: NivelService) {}
 

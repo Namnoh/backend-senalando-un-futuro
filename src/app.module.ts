@@ -6,6 +6,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { NivelModule } from './niveles/niveles.module';
 import { ProgresoModule } from './progresos/progresos.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -14,7 +15,8 @@ import { ProgresoModule } from './progresos/progresos.module';
     PalabrasModule, 
     UsuariosModule, CategoriasModule,
     NivelModule,
-    ProgresoModule
+    ProgresoModule,
+    AuthModule
   ],
   controllers: [],
   providers: [PrismaService],
