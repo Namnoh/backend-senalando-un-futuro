@@ -45,7 +45,6 @@ export class AuthService {
       this.jwtSecret,
       { expiresIn: '1h' } // 1 hora de expiración
     );
-    console.log('Token generado:', token);
     const resetLink = `${process.env.FRONT_URL}/updatePassword?token=${token}`;
 
     // Enviar correo con el enlace de restablecimiento
@@ -97,9 +96,7 @@ export class AuthService {
 
   async verifyResetToken(token: string): Promise<string> {
     try {
-      console.log('Token recibido:', token);
       const decoded = jwt.verify(token, this.jwtSecret) as { email: string };
-      console.log('Token decodificado:', decoded);
       return decoded.email;
     } catch (error) {
       console.error('Error al verificar el token:', error);
