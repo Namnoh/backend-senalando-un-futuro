@@ -89,17 +89,39 @@ export class CategoriasService {
   }
 
   async remove(id: number) {
-    const deletedCategoria = await this.prismaService.categoria.delete({
-      where: {
-        idCategoria: id
-      }
-    })
+    try {
+      const deletedCategoria = await this.prismaService.categoria.delete({
+        where: {
+          idCategoria: id
+        }
+      })
 
-    if (!deletedCategoria) {
-      throw new NotFoundException(`La palabra con id: ${id} no fue encontrada.`);
+      if (!deletedCategoria) {
+        throw new NotFoundException(`La categoria con id: ${id} no fue encontrada.`);
+      }
+      
+      return deletedCategoria;
+    } catch (error) {
+        // Validar si es un error de restricción
+        if (error.code === 'P2011') { // Código de error de constraint en Prisma (por ejemplo, restricción de clave foránea)
+          throw new HttpException(
+            {
+              status: HttpStatus.BAD_REQUEST,
+              message: "No se puede eliminar esta categoría porque está relacionada con otros registros.",
+            },
+            HttpStatus.BAD_REQUEST
+          );
+        }
+
+        // Manejar otros errores
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            message: 'Ha ocurrido un error al intentar eliminar la categoría.',
+          },
+          HttpStatus.BAD_REQUEST
+        );
     }
-    
-    return deletedCategoria;
   }
 
   async findAllByLevel(idNivel: number) {
