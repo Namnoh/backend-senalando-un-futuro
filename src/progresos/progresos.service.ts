@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, InternalServerErrorException, No
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CrearProgresoDto } from './dto/create-progreso.dto';
 import { ActualizarProgresoDto } from './dto/update-progreso.dto';
-import { Progreso } from '@prisma/client';
+import { Prisma, Progreso } from '@prisma/client';
 
 @Injectable()
 export class ProgresoService {
@@ -63,21 +63,35 @@ export class ProgresoService {
 
     async actualizarProgreso(idUsuario: number, datosActualizacion: Partial<ActualizarProgresoDto>): Promise<Progreso> {
         try {
+            console.log('ENTRA EN EL BACKEND')
+            console.log('IDUSUARIO: ', idUsuario)
+            console.log('DATOSACTUALIZACIÓN: ', datosActualizacion)
             const progresoExistente = await this.prisma.progreso.findUnique({
-                where: { idUsuario },
+                where: { idUsuario: idUsuario },
             });
-    
+            
+            console.log('Progreso Existente:', progresoExistente)
             if (!progresoExistente) {
                 throw new NotFoundException(`No se encontró progreso para el usuario con id ${idUsuario}`);
             }
     
+            const datosActualizacionFormateados = {
+                ...datosActualizacion,
+                categoriasProgreso: datosActualizacion.categoriasProgreso as Prisma.JsonValue,
+                palabrasProgreso: datosActualizacion.palabrasProgreso as Prisma.JsonValue,
+            };
+
             return await this.prisma.progreso.update({
                 where: { idUsuario },
-                data: datosActualizacion,
+                data: datosActualizacionFormateados,
             });
         } catch (error) {
             if (error instanceof NotFoundException) {
                 throw error;
+            }
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                // Manejar errores específicos de Prisma
+                throw new InternalServerErrorException(`Error de base de datos: ${error.message}`);
             }
             throw new InternalServerErrorException(`Error al actualizar el progreso: ${error.message}`);
         }
@@ -94,9 +108,15 @@ export class ProgresoService {
             throw new NotFoundException(`El usuario con ${idProgreso} no fue encontrado`);
         }
 
+        const datosActualizacionFormateados = {
+            ...updatedProgress,
+            categoriasProgreso: JSON.stringify(updatedProgress.categoriasProgreso),
+            palabrasProgreso: JSON.stringify(updatedProgress.palabrasProgreso),
+        };
+
         return await this.prisma.progreso.update({
-        where: { idProgreso: idProgreso },
-        data: updatedProgress,
+            where: { idProgreso: idProgreso },
+            data: datosActualizacionFormateados,
         });
     };
 }

@@ -33,16 +33,13 @@ export class ProgresoController {
         return this.progresoService.obtenerTodosLosProgresos();
     }
 
-    @Put('usuario/:idUsuario')
-    // @ApiOperation({ summary: 'Actualizar el progreso de un usuario' })
-    // @ApiResponse({ status: 200, description: 'El progreso ha sido actualizado exitosamente.' })
-    // @ApiResponse({ status: 404, description: 'Progreso no encontrado.' })
-    // @ApiBody({ type: ActualizarProgresoDto })
+    @Patch('usuario/:idUsuario')
     async actualizarProgreso(
-        @Param('idUsuario', ParseIntPipe) idUsuario: number,
-        @Body() datosActualizacion: ActualizarProgresoDto
+        @Param('idUsuario') idUsuario: string,
+        @Body() datosActualizacion: Partial<ActualizarProgresoDto>
     ): Promise<Progreso> {
-        return this.progresoService.actualizarProgreso(idUsuario, datosActualizacion);
+        console.log("ENTRA AL CONTROLADOR DE BACKEND: ", idUsuario)
+        return this.progresoService.actualizarProgreso(+idUsuario, datosActualizacion);
     }
 
     @Patch(':id')
