@@ -18,6 +18,9 @@ class PalabraProgreso {
     
     @IsString()
     nombrePalabra: string;
+
+    @IsNumber()
+    categoriaPalabra: string;
 }
 
 export class CrearProgresoDto {

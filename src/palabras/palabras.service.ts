@@ -107,18 +107,34 @@ export class PalabrasService {
   }
 
   async findAllByCategory(idCategoria: number) {
-    const wordFound = await this.prismaService.palabra.findMany({
+    const wordsFound = await this.prismaService.palabra.findMany({
       where: {
         idCategoria: idCategoria,  // Aquí se filtra por la FK que hace referencia al nivel
       },
     });
 
-    if (!wordFound) {
+    if (!wordsFound) {
       throw new NotFoundException(
         `No se encontraron categorías correspondientes al nivel ${idCategoria}.`,
       );
     }
 
-    return wordFound;
+    return wordsFound;
+  }
+
+  async findAllByLevel(idNivel: number) {
+    const wordsFound = await this.prismaService.palabra.findMany({
+      where: {
+        idNivel: idNivel,  // Aquí se filtra por la FK que hace referencia al nivel
+      },
+    });
+
+    if (!wordsFound) {
+      throw new NotFoundException(
+        `No se encontraron categorías correspondientes al nivel ${idNivel}.`,
+      );
+    }
+
+    return wordsFound;
   }
 }

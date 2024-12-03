@@ -38,7 +38,6 @@ export class ProgresoController {
         @Param('idUsuario') idUsuario: string,
         @Body() datosActualizacion: Partial<ActualizarProgresoDto>
     ): Promise<Progreso> {
-        console.log("ENTRA AL CONTROLADOR DE BACKEND: ", idUsuario)
         return this.progresoService.actualizarProgreso(+idUsuario, datosActualizacion);
     }
 

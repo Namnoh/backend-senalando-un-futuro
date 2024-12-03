@@ -63,14 +63,9 @@ export class ProgresoService {
 
     async actualizarProgreso(idUsuario: number, datosActualizacion: Partial<ActualizarProgresoDto>): Promise<Progreso> {
         try {
-            console.log('ENTRA EN EL BACKEND')
-            console.log('IDUSUARIO: ', idUsuario)
-            console.log('DATOSACTUALIZACIÓN: ', datosActualizacion)
             const progresoExistente = await this.prisma.progreso.findUnique({
                 where: { idUsuario: idUsuario },
             });
-            
-            console.log('Progreso Existente:', progresoExistente)
             if (!progresoExistente) {
                 throw new NotFoundException(`No se encontró progreso para el usuario con id ${idUsuario}`);
             }
