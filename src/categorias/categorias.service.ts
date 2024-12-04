@@ -74,18 +74,37 @@ export class CategoriasService {
       }, HttpStatus.BAD_REQUEST);
     }
 
-    const categoryFound = await this.prismaService.categoria.update({
+    const categoryFound = await this.prismaService.categoria.findUnique({
       where: {
         idCategoria : id
       },
-      data: updateCategoriaDto
     })
 
     if (!categoryFound) {
       throw new NotFoundException(`La categoría con id: ${id} no fue encontrada.`);
     }
+    
+    // Validación cambio de nivel
+    if (updateCategoriaDto.idNivel && categoryFound.idNivel !== updateCategoriaDto.idNivel ) {
+      await this.prismaService.palabra.updateMany({
+        where: {
+          idCategoria: id,
+        },
+        data: {
+          idNivel: updateCategoriaDto.idNivel,
+        },
+    });
+    }
 
-    return categoryFound;
+    const categoryUpdated = await this.prismaService.categoria.update({
+      where: {
+        idCategoria : id
+      },
+      data: updateCategoriaDto
+    });
+
+
+    return categoryUpdated;
   }
 
   async remove(id: number) {
