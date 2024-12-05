@@ -120,9 +120,18 @@ export class UsuariosService {
         idUsuario: id,
       },
     });
+
     if (!deleteUsuario) {
       throw new NotFoundException(`El usuario con ${id} no fue encontrado`);
     }
+
+    // Eliminación del progreso del usuario
+    await this.prismaService.progreso.delete({
+      where: {
+        idUsuario: id,
+      },
+    });
+
     return deleteUsuario;
   }
   

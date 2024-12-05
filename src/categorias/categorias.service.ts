@@ -93,7 +93,7 @@ export class CategoriasService {
         data: {
           idNivel: updateCategoriaDto.idNivel,
         },
-    });
+      });
     }
 
     const categoryUpdated = await this.prismaService.categoria.update({
