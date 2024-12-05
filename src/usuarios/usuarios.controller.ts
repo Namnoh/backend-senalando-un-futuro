@@ -16,6 +16,11 @@ export class UsuariosController {
     return this.usuariosService.create(createUsuarioDto);
   }
 
+  @Post('/deleteManyUsers')
+  removeManyUsers(@Body() idsUsuarios: number[]) {
+    return this.usuariosService.removeMany(idsUsuarios);
+  }
+
   @Get()
   findAll() {
     return this.usuariosService.findAll();
@@ -35,6 +40,7 @@ export class UsuariosController {
   remove(@Param('id') id: string) {
     return this.usuariosService.remove(+id);
   }
+
   @Get('/findByEmail/:email')
   findByEmail(@Param('email') email: string) {
     return this.usuariosService.findByEmail(email);

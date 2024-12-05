@@ -122,6 +122,25 @@ export class PalabrasService {
     return wordsFound;
   }
 
+  async removeMany(ids: number[]) {
+    let deleteWords;
+  
+    await this.prismaService.$transaction(async (prisma) => {
+      deleteWords = await prisma.palabra.deleteMany({
+        where: {
+          idPalabra: { in: ids },
+        },
+      });
+  
+      // Si no se eliminaron usuarios, lanza una excepción
+      if (deleteWords.count === 0) {
+        throw new NotFoundException(`No se encontraron usuarios con los IDs proporcionados`);
+      }
+    });
+  
+    return deleteWords;
+  }
+
   async findAllByLevel(idNivel: number) {
     const wordsFound = await this.prismaService.palabra.findMany({
       where: {

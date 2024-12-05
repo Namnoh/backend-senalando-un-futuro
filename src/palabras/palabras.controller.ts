@@ -12,6 +12,11 @@ export class PalabrasController {
     return this.palabrasService.create(createPalabraDto);
   }
 
+  @Post('/deleteManyWords')
+  removeManyUsers(@Body() idsWords: number[]) {
+    return this.palabrasService.removeMany(idsWords);
+  }
+
   @Get()
   findAll() {
     return this.palabrasService.findAll();

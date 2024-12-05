@@ -143,6 +143,25 @@ export class CategoriasService {
     }
   }
 
+  async removeMany(ids: number[]) {
+    let deleteCategories;
+  
+    await this.prismaService.$transaction(async (prisma) => {
+      deleteCategories = await prisma.categoria.deleteMany({
+        where: {
+          idCategoria: { in: ids },
+        },
+      });
+  
+      // Si no se eliminaron usuarios, lanza una excepción
+      if (deleteCategories.count === 0) {
+        throw new NotFoundException(`No se encontraron usuarios con los IDs proporcionados`);
+      }
+    });
+  
+    return deleteCategories;
+  }
+
   async findAllByLevel(idNivel: number) {
     const categoryFound = await this.prismaService.categoria.findMany({
       where: {
