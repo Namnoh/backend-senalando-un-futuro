@@ -1,12 +1,13 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CrearProgresoDto } from './dto/create-progreso.dto';
-import { ActualizarProgresoDto } from './dto/update-progreso.dto';
+import { ActualizarProgresoDto, CategoriaProgreso, PalabraProgreso } from './dto/update-progreso.dto';
 import { Prisma, Progreso } from '@prisma/client';
+import { PalabrasService } from 'src/palabras/palabras.service';
 
 @Injectable()
 export class ProgresoService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService, private readonly palabrasService: PalabrasService) {}
 
     async crearProgreso(crearProgresoDto: CrearProgresoDto): Promise<Progreso> {
         try {
@@ -44,7 +45,67 @@ export class ProgresoService {
             if (!progreso) {
                 throw new NotFoundException(`No se encontró progreso para el usuario con id ${idUsuario}`);
             }
-            return progreso;
+
+            let updatedProgress: Progreso;
+
+            const originalCategoriasProgreso:CategoriaProgreso[] = Object.values(progreso.categoriasProgreso);
+            let wasUpdated = false; 
+            const categoriaPromises = Object.values(originalCategoriasProgreso).map(async (category: CategoriaProgreso) => {
+                // Usamos await aquí porque map es asincrónico
+                const categoryWordsTotal = await this.palabrasService.findAllByCategory(category.idCategoria);
+                
+                if (Object.keys(progreso.categoriasProgreso).length === 0) {
+                    // Si no encontramos palabras para esta categoría, devolver un objeto vacío o manejar el error
+                    return {};
+                }
+
+                // Se cuentan las palabras totales del progreso actual
+                const wordsCount = Object.values(progreso.palabrasProgreso).filter(
+                (palabra) => palabra.categoriaPalabra === category.idCategoria
+                ).length;
+        
+                // Se hace el cálculo para el total
+                const porcentajeCategoria = wordsCount / categoryWordsTotal.length;
+                if (porcentajeCategoria === category.progresoCategoria) {
+                    return {
+                        [category.idCategoria]: category
+                    };
+                }
+                
+                const categoriaProgreso : CategoriaProgreso = {
+                    ...category,
+                    progresoCategoria: porcentajeCategoria,
+                };
+                
+                wasUpdated = true;
+                return {
+                    [category.idCategoria]: categoriaProgreso
+                };
+            })
+
+            // Esperamos a que todas las promesas se resuelvan
+            const categoriasProgresoArray = await Promise.all(categoriaPromises);
+
+            // Aplanar el array para extraer los objetos dentro de las claves
+            const aplanadoCategoriasProgreso = categoriasProgresoArray.flatMap((obj) => Object.values(obj));
+            // Se crea el objeto con las categorías en progreso.
+            const categoriasProgreso = aplanadoCategoriasProgreso.reduce(
+                (acc, item: CategoriaProgreso) => {
+                    acc[item.idCategoria] = item; // Usa `idCategoria` o cualquier propiedad única como clave
+                    return acc;
+                },
+                {} as Record<string, CategoriaProgreso> // Asegúrate de que el acumulador es del tipo adecuado
+            );
+            
+            updatedProgress = {
+                ...progreso,
+                categoriasProgreso: categoriasProgreso as any,
+            };
+
+            if (wasUpdated) {
+                return this.actualizarProgreso(idUsuario, updatedProgress);
+            };
+            return updatedProgress;
         } catch (error) {
             if (error instanceof NotFoundException) {
                 throw error;
