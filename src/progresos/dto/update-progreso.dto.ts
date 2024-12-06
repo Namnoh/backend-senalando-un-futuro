@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
 
-class CategoriaProgreso {
+export class CategoriaProgreso {
     @IsNumber()
     idCategoria: number;
 
@@ -12,7 +12,7 @@ class CategoriaProgreso {
     progresoCategoria: number;
 }
 
-class PalabraProgreso {
+export class PalabraProgreso {
     @IsNumber()
     idPalabra: number;
     
