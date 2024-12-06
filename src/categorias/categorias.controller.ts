@@ -13,6 +13,11 @@ export class CategoriasController {
     return this.categoriasService.create(createCategoriaDto);
   }
 
+  @Post('/deleteManyCategories')
+  removeManyUsers(@Body() idsCategories: number[]) {
+    return this.categoriasService.removeMany(idsCategories);
+  }
+
   @Get()
   findAll() {
     return this.categoriasService.findAll();

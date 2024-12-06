@@ -1,7 +1,5 @@
 
-import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsNumber, IsObject, IsString, ValidateNested } from 'class-validator';
-import { Palabra } from 'src/palabras/entities/palabra.entity';
+import { IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
 
 class CategoriaProgreso {
     @IsNumber()
@@ -20,6 +18,9 @@ class PalabraProgreso {
     
     @IsString()
     nombrePalabra: string;
+
+    @IsNumber()
+    categoriaPalabra: string;
 }
 
 export class CrearProgresoDto {

@@ -1,13 +1,33 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Prisma } from '@prisma/client';
+import { IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
+
+class CategoriaProgreso {
+    @IsNumber()
+    idCategoria: number;
+
+    @IsString()
+    nombreCategoria: string;
+
+    @IsNumber()
+    progresoCategoria: number;
+}
+
+class PalabraProgreso {
+    @IsNumber()
+    idPalabra: number;
+    
+    @IsString()
+    nombrePalabra: string;
+}
 
 export class ActualizarProgresoDto {
     @IsNotEmpty()
-    @IsString()
-    categoriasProgreso: string; // JSON string
+    @IsObject()
+    categoriasProgreso: Prisma.JsonValue;
 
     @IsNotEmpty()
-    @IsString()
-    palabrasProgreso: string; // JSON string
+    @IsObject()
+    palabrasProgreso: Prisma.JsonValue;
 
     @IsNotEmpty()
     @IsNumber()

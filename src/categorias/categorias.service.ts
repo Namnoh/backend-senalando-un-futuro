@@ -74,32 +74,92 @@ export class CategoriasService {
       }, HttpStatus.BAD_REQUEST);
     }
 
-    const categoryFound = await this.prismaService.categoria.update({
+    const categoryFound = await this.prismaService.categoria.findUnique({
       where: {
         idCategoria : id
       },
-      data: updateCategoriaDto
     })
 
     if (!categoryFound) {
       throw new NotFoundException(`La categoría con id: ${id} no fue encontrada.`);
     }
+    
+    // Validación cambio de nivel
+    if (updateCategoriaDto.idNivel && categoryFound.idNivel !== updateCategoriaDto.idNivel ) {
+      await this.prismaService.palabra.updateMany({
+        where: {
+          idCategoria: id,
+        },
+        data: {
+          idNivel: updateCategoriaDto.idNivel,
+        },
+      });
+    }
 
-    return categoryFound;
+    const categoryUpdated = await this.prismaService.categoria.update({
+      where: {
+        idCategoria : id
+      },
+      data: updateCategoriaDto
+    });
+
+
+    return categoryUpdated;
   }
 
   async remove(id: number) {
-    const deletedCategoria = await this.prismaService.categoria.delete({
-      where: {
-        idCategoria: id
-      }
-    })
+    try {
+      const deletedCategoria = await this.prismaService.categoria.delete({
+        where: {
+          idCategoria: id
+        }
+      })
 
-    if (!deletedCategoria) {
-      throw new NotFoundException(`La palabra con id: ${id} no fue encontrada.`);
+      if (!deletedCategoria) {
+        throw new NotFoundException(`La categoria con id: ${id} no fue encontrada.`);
+      }
+      
+      return deletedCategoria;
+    } catch (error) {
+        // Validar si es un error de restricción
+        if (error.code === 'P2011') { // Código de error de constraint en Prisma (por ejemplo, restricción de clave foránea)
+          throw new HttpException(
+            {
+              status: HttpStatus.BAD_REQUEST,
+              message: "No se puede eliminar esta categoría porque está relacionada con otros registros.",
+            },
+            HttpStatus.BAD_REQUEST
+          );
+        }
+
+        // Manejar otros errores
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            message: 'Ha ocurrido un error al intentar eliminar la categoría.',
+          },
+          HttpStatus.BAD_REQUEST
+        );
     }
-    
-    return deletedCategoria;
+  }
+
+  async removeMany(ids: number[]) {
+    let deleteCategories;
+  
+    await this.prismaService.$transaction(async (prisma) => {
+      deleteCategories = await prisma.categoria.deleteMany({
+        where: {
+          idCategoria: { in: ids },
+        },
+      });
+  
+      // Si no se eliminaron usuarios, lanza una excepción
+      if (deleteCategories.count === 0) {
+        throw new NotFoundException(`No se encontraron usuarios con los IDs proporcionados`);
+      }
+    });
+  
+    return deleteCategories;
   }
 
   async findAllByLevel(idNivel: number) {

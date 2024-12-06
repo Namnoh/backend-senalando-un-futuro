@@ -120,9 +120,44 @@ export class UsuariosService {
         idUsuario: id,
       },
     });
+
     if (!deleteUsuario) {
       throw new NotFoundException(`El usuario con ${id} no fue encontrado`);
     }
+
+    // Eliminación del progreso del usuario
+    await this.prismaService.progreso.delete({
+      where: {
+        idUsuario: id,
+      },
+    });
+
+    return deleteUsuario;
+  }
+
+  async removeMany(ids: number[]) {
+    let deleteUsuario;
+  
+    await this.prismaService.$transaction(async (prisma) => {
+      deleteUsuario = await prisma.usuario.deleteMany({
+        where: {
+          idUsuario: { in: ids },
+        },
+      });
+  
+      // Si no se eliminaron usuarios, lanza una excepción
+      if (deleteUsuario.count === 0) {
+        throw new NotFoundException(`No se encontraron usuarios con los IDs proporcionados`);
+      }
+  
+      // Elimina el progreso de los usuarios
+      await prisma.progreso.deleteMany({
+        where: {
+          idUsuario: { in: ids },
+        },
+      });
+    });
+  
     return deleteUsuario;
   }
   

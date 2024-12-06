@@ -12,6 +12,11 @@ export class PalabrasController {
     return this.palabrasService.create(createPalabraDto);
   }
 
+  @Post('/deleteManyWords')
+  removeManyUsers(@Body() idsWords: number[]) {
+    return this.palabrasService.removeMany(idsWords);
+  }
+
   @Get()
   findAll() {
     return this.palabrasService.findAll();
@@ -33,7 +38,12 @@ export class PalabrasController {
   }
 
   @Get('getAllByCategory/:idCategoria')
-  findAllByLevel(@Param('idCategoria') idCategoria: number) {
+  findAllByCategory(@Param('idCategoria') idCategoria: number) {
     return this.palabrasService.findAllByCategory(+idCategoria)
+  }
+
+  @Get('getAllWordsFromLevel/:idNivel')
+  findAllByLevel(@Param('idNivel') idNivel: number) {
+    return this.palabrasService.findAllByLevel(+idNivel)
   }
 }
